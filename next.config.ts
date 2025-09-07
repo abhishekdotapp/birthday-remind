@@ -1,14 +1,11 @@
+import type {NextConfig} from "next";
 
-type CustomNextConfig = {
-    output?: 'standalone' | 'static' | 'export';
-    // Include other Next.js config properties as needed
-    reactStrictMode?: boolean;
-    // ... other properties
-};
-
-
-const nextConfig: CustomNextConfig = {
-    output: "static",
+const nextConfig: NextConfig = {
+  output: 'export',
+  trailingSlash: true,
+  images: {
+    unoptimized: true
+  }
 };
 
 export default nextConfig;
