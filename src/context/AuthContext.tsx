@@ -23,9 +23,12 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
 
     const checkUserStatus = async() => {
         try{
+            console.log('Checking user status...');
             const currentUser = await account.get();
+            console.log('User found:', currentUser.email);
             setUser(currentUser);
-        } catch(e){
+        } catch(e: any){
+            console.log('No active session:', e.message);
             setUser(null);
         } finally {
             setloading(false);
@@ -55,15 +58,17 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
 
     const signUp = async (email:string , password: string, name: string) => {
         try{
+            console.log('Creating account for:', email);
             await account.create(
                 ID.unique(),
                 email,
                 password,
                 name
             );
+            console.log('Account created, signing in...');
             await signIn(email, password);
-        } catch(e){
-            console.log(e);
+        } catch(e: any){
+            console.error('Sign up error:', e.message, e);
             throw e;
         }
     };
