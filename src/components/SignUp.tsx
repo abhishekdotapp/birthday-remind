@@ -1,7 +1,7 @@
 // src/components/SignUp.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
@@ -11,8 +11,15 @@ export default function SignUp() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const { signUp } = useAuth();
+    const { signUp, user, loading: authLoading } = useAuth();
     const router = useRouter();
+
+    // Redirect if user is already authenticated
+    useEffect(() => {
+        if (!authLoading && user) {
+            router.push('/dashboard');
+        }
+    }, [user, authLoading, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -21,6 +28,7 @@ export default function SignUp() {
 
         try {
             await signUp(email, password, name);
+            // Redirect to dashboard after successful signup
             router.push('/dashboard');
         } catch (err) {
             console.error('Sign up error:', err);

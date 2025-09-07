@@ -11,11 +11,11 @@ interface AuthContextProps {
     signOut: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextProps | null>(null);
+export const AuthContext = createContext<AuthContextProps | null>(null);
 
 export const AuthProvider = ({children}: {children: ReactNode}) => {
     const [user, setUser] = useState<Models.User<Models.Preferences> | null>(null);
-    const [loading, setloading] =  useState(false);
+    const [loading, setloading] =  useState(true);
 
     useEffect(()=> {
         checkUserStatus();
@@ -34,10 +34,17 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
 
     const signIn = async (email: string, password: string) => {
         try{
-            await account.createEmailPasswordSession({
-                email,
-                password
-            });
+            // Check if there's already an active session and delete it
+            try {
+                await account.get();
+                // If we get here, there's an active session, so delete it
+                await account.deleteSession('current');
+            } catch {
+                // No active session, which is fine
+            }
+            
+            // Create new session
+            await account.createEmailPasswordSession(email, password);
             const currentUser = await account.get();
             setUser(currentUser);
         } catch(e){
@@ -70,6 +77,7 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
             throw e;
         }
     };
+
 
     const value ={
         user,
