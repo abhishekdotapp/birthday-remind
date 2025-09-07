@@ -5,6 +5,12 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   images: {
     unoptimized: true
+  },
+
+  experimental: {
+    outputFileTracingExcludes: {
+      '*': ['./index.txt']
+    }
   }
 };
 
